@@ -1,24 +1,31 @@
 /* Design tokens — the only place colors, type, spacing, and motion are defined. */
 :root {
-  /* palette: warm manuscript paper, ink, one accent */
-  --paper: #f6f1e7;
-  --paper-raised: #fbf8f1;
-  --ink: #1d1b18;
-  --ink-soft: #5c564c;
-  --ink-faint: #a49b8c;
-  --staff-line: #cfc6b5;
-  --accent: #b4532a;
-  --accent-soft: #e7b99f;
+  /* cool stave paper, indigo engraving ink */
+  --paper: #eef0f3;
+  --paper-raised: #f7f8fa;
+  --ink: #1a1d33;
+  --ink-soft: #4a4f6a;
+  --ink-faint: #8a8fa8;
+  --staff-line: #c3c8d6;
+  --focus: #3b47d6;
 
-  /* type */
-  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
-  --font-text: 'Newsreader', 'Iowan Old Style', Georgia, serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  /* pitch → color: tonic is deep and settled, the octave warm and tense (after Scriabin) */
+  --degree-0: oklch(0.42 0.15 265);
+  --degree-1: oklch(0.46 0.16 282);
+  --degree-2: oklch(0.5 0.17 299);
+  --degree-3: oklch(0.53 0.18 316);
+  --degree-4: oklch(0.57 0.18 334);
+  --degree-5: oklch(0.6 0.18 351);
+  --degree-6: oklch(0.64 0.17 8);
+  --degree-7: oklch(0.68 0.16 25);
+
+  /* type: one family, optical sizes do the work */
+  --font: 'Newsreader', 'Iowan Old Style', Georgia, serif;
   --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.875rem);
   --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
-  --step-1: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
-  --step-2: clamp(1.6rem, 1.4rem + 1vw, 2.25rem);
-  --step-3: clamp(2.2rem, 1.8rem + 2vw, 3.5rem);
+  --step-1: clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem);
+  --step-2: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --step-3: clamp(2.1rem, 1.6rem + 2.4vw, 3.6rem);
 
   /* space */
   --space-1: 0.25rem;
@@ -27,45 +34,61 @@
   --space-4: 1.5rem;
   --space-5: 2.5rem;
   --space-6: 4rem;
+  --measure: 64ch;
 
-  /* motion */
-  --dur-fast: 160ms;
-  --dur-base: 320ms;
-  --dur-slow: 720ms;
+  /* motion (seconds, so JS can read them too) */
+  --dur-fast: 0.16s;
+  --dur-base: 0.32s;
+  --dur-slow: 0.72s;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --paper: #14130f;
-    --paper-raised: #1c1a16;
-    --ink: #efe8da;
-    --ink-soft: #b3aa99;
-    --ink-faint: #6e675b;
-    --staff-line: #3a362f;
-    --accent: #e08155;
-    --accent-soft: #6b3a24;
+    --paper: #121426;
+    --paper-raised: #1a1d33;
+    --ink: #e4e6f0;
+    --ink-soft: #a3a8c2;
+    --ink-faint: #5d6280;
+    --staff-line: #2c3050;
+    --focus: #8f98ff;
+    --degree-0: oklch(0.62 0.13 265);
+    --degree-1: oklch(0.65 0.14 282);
+    --degree-2: oklch(0.68 0.15 299);
+    --degree-3: oklch(0.71 0.15 316);
+    --degree-4: oklch(0.74 0.15 334);
+    --degree-5: oklch(0.77 0.14 351);
+    --degree-6: oklch(0.8 0.13 8);
+    --degree-7: oklch(0.83 0.12 25);
+    color-scheme: dark;
   }
 }
 
 :root[data-theme='dark'] {
-  --paper: #14130f;
-  --paper-raised: #1c1a16;
-  --ink: #efe8da;
-  --ink-soft: #b3aa99;
-  --ink-faint: #6e675b;
-  --staff-line: #3a362f;
-  --accent: #e08155;
-  --accent-soft: #6b3a24;
+  --paper: #121426;
+  --paper-raised: #1a1d33;
+  --ink: #e4e6f0;
+  --ink-soft: #a3a8c2;
+  --ink-faint: #5d6280;
+  --staff-line: #2c3050;
+  --focus: #8f98ff;
+  --degree-0: oklch(0.62 0.13 265);
+  --degree-1: oklch(0.65 0.14 282);
+  --degree-2: oklch(0.68 0.15 299);
+  --degree-3: oklch(0.71 0.15 316);
+  --degree-4: oklch(0.74 0.15 334);
+  --degree-5: oklch(0.77 0.14 351);
+  --degree-6: oklch(0.8 0.13 8);
+  --degree-7: oklch(0.83 0.12 25);
+  color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --dur-fast: 0ms;
-    --dur-base: 0ms;
-    --dur-slow: 0ms;
+    --dur-fast: 0s;
+    --dur-base: 0s;
+    --dur-slow: 0s;
   }
 }
