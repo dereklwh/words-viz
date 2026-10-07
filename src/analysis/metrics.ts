@@ -1,12 +1,11 @@
 import type { Metrics, Phrase } from './types'
 
 export function longestRun(lengths: number[]): Metrics['longestRun'] {
-  let best = { start: 0, length: lengths.length > 0 ? 1 : 0 }
-  let start = 0
-  for (let i = 1; i <= lengths.length; i++) {
-    if (i < lengths.length && Math.abs(lengths[i] - lengths[start]) <= 1) continue
-    if (i - start > best.length) best = { start, length: i - start }
-    start = i
+  let best = { start: 0, length: 0 }
+  for (let start = 0; start < lengths.length; start++) {
+    let end = start + 1
+    while (end < lengths.length && Math.abs(lengths[end] - lengths[start]) <= 1) end++
+    if (end - start > best.length) best = { start, length: end - start }
   }
   return best
 }

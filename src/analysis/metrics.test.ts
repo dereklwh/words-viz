@@ -6,6 +6,10 @@ describe('longestRun', () => {
     expect(longestRun([3, 12, 5, 6, 5, 4, 20])).toEqual({ start: 2, length: 4 })
   })
 
+  it('considers runs starting inside a broken run', () => {
+    expect(longestRun([5, 6, 7, 7, 7])).toEqual({ start: 1, length: 4 })
+  })
+
   it('prefers the earliest run on ties', () => {
     expect(longestRun([2, 2, 9, 9])).toEqual({ start: 0, length: 2 })
   })

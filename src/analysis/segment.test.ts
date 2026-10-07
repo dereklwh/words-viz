@@ -23,6 +23,40 @@ describe('segmentSentences', () => {
     ])
   })
 
+  it('keeps sentence breaks after a lone capital that is not an initial', () => {
+    expect(sentenceTexts('Take vitamin A. Then rest.')).toEqual(['Take vitamin A.', 'Then rest.'])
+    expect(sentenceTexts('Plan B. Then go.')).toEqual(['Plan B.', 'Then go.'])
+    expect(sentenceTexts('I met John F. Kennedy. He waved.')).toEqual([
+      'I met John F. Kennedy.',
+      'He waved.',
+    ])
+  })
+
+  it('keeps sentence breaks after post-nominals', () => {
+    expect(sentenceTexts('I spoke to John Jr. Then left.')).toEqual([
+      'I spoke to John Jr.',
+      'Then left.',
+    ])
+  })
+
+  it('keeps dialogue attribution with its quote', () => {
+    expect(sentenceTexts('“Stop!” she said. Then left.')).toEqual([
+      '“Stop!” she said.',
+      'Then left.',
+    ])
+    expect(sentenceTexts('"Is it over?" she asked.')).toEqual(['"Is it over?" she asked.'])
+  })
+
+  it('handles Windows line endings', () => {
+    const text = 'One.\r\n\r\nTwo is\r\nwrapped here.'
+    expect(sentenceTexts(text)).toEqual(['One.', 'Two is\r\nwrapped here.'])
+    expect(segmentSentences(text).map((s) => s.endsParagraph)).toEqual([true, true])
+  })
+
+  it('skips paragraphs without words', () => {
+    expect(sentenceTexts('...\n\nReal words.')).toEqual(['Real words.'])
+  })
+
   it('ignores hard wraps inside a paragraph', () => {
     expect(sentenceTexts('This line was\nwrapped by a PDF. Next.')).toEqual([
       'This line was\nwrapped by a PDF.',
@@ -43,6 +77,14 @@ describe('segmentSentences', () => {
 })
 
 describe('segmentParagraphs', () => {
+  it('splits on CRLF and lone CR blank lines', () => {
+    expect(segmentParagraphs('A.\r\n\r\nB.\r\rC.')).toEqual([
+      { start: 0, end: 2 },
+      { start: 6, end: 8 },
+      { start: 10, end: 12 },
+    ])
+  })
+
   it('drops blank paragraphs', () => {
     expect(segmentParagraphs('\n\nA.\n\n\n\nB.\n\n')).toEqual([
       { start: 2, end: 4 },

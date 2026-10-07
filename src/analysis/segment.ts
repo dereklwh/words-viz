@@ -1,3 +1,4 @@
+import { isFunctionWord } from './prosody'
 import type { Span } from './types'
 
 export interface WordToken extends Span {
@@ -16,29 +17,27 @@ export interface SentenceSpan extends Span {
 const sentenceSegmenter = new Intl.Segmenter('en', { granularity: 'sentence' })
 const wordSegmenter = new Intl.Segmenter('en', { granularity: 'word' })
 
-const ABBREVIATIONS = new Set([
-  'mr',
-  'mrs',
-  'ms',
-  'dr',
-  'prof',
-  'sr',
-  'jr',
-  'st',
-  'mt',
-  'vs',
-  'fig',
-  'approx',
-  'e.g',
-  'i.e',
-  'cf',
-])
+/** Titles always precede a name, so a period after one never ends a sentence. */
+const TITLES = new Set(['mr', 'mrs', 'ms', 'dr', 'prof', 'st', 'mt', 'fig', 'approx', 'vs', 'cf'])
+
+/** Capitalized words that usually open a sentence rather than continue a name. */
+const SENTENCE_OPENERS = new Set(
+  'then now but and so yet still later also however after before finally meanwhile instead'.split(
+    ' ',
+  ),
+)
+
+// A lone \r must not match the first half of \r\n, or one CRLF reads as a blank line.
+const LINE_BREAK = /\r\n|\r(?!\n)|\n/
+const PARAGRAPH_BREAK = new RegExp(
+  `(?:${LINE_BREAK.source})[ \\t]*(?:${LINE_BREAK.source})\\s*`,
+  'g',
+)
 
 export function segmentParagraphs(text: string): Span[] {
   const spans: Span[] = []
-  const separator = /\n[ \t]*\n\s*/g
   let start = 0
-  for (const match of text.matchAll(separator)) {
+  for (const match of text.matchAll(PARAGRAPH_BREAK)) {
     spans.push({ start, end: match.index })
     start = match.index + match[0].length
   }
@@ -63,54 +62,71 @@ export function segmentWords(text: string, span: Span): WordToken[] {
   return words
 }
 
-function endsWithAbbreviation(words: WordToken[], trailing: string): boolean {
-  const last = words.at(-1)
-  if (!last || !trailing.trimStart().startsWith('.')) return false
-  const word = last.text.toLowerCase()
-  return ABBREVIATIONS.has(word) || /^\p{Lu}$/u.test(last.text)
+const startsLowercase = (word: WordToken) => /^\p{Ll}/u.test(word.text)
+const isCapitalized = (word: WordToken) => /^\p{Lu}/u.test(word.text)
+const isInitial = (text: string, word: WordToken) =>
+  /^\p{Lu}$/u.test(word.text) && text[word.end] === '.'
+
+/** Decides whether an ICU sentence break between two segments is false. */
+function continuesSentence(text: string, current: Span, words: WordToken[], next: WordToken[]) {
+  const last = words.at(-1)!
+  const first = next[0]
+  // Dialogue tags (“Stop!” she said) and other lowercase continuations.
+  if (startsLowercase(first)) return true
+  if (text.slice(last.end, current.end).trim() !== '.') return false
+  if (TITLES.has(last.text.toLowerCase())) return true
+  if (!isInitial(text, last)) return false
+
+  // An initial needs a name around it: "John F. Kennedy", not "vitamin A. Then".
+  const before = words.at(-2)
+  const nameBefore = !before || isCapitalized(before)
+  const opener = isFunctionWord(first.text) || SENTENCE_OPENERS.has(first.text.toLowerCase())
+  const nameAfter = isInitial(text, first) || (isCapitalized(first) && !opener)
+  return nameBefore && nameAfter
+}
+
+/** Re-segments words over the full span so gaps across merged segments are kept. */
+function toSentence(text: string, span: Span): SentenceSpan {
+  const words = segmentWords(text, span)
+  return {
+    start: span.start,
+    end: trimEnd(text, span.start, span.end),
+    words,
+    trailing: text.slice(words.at(-1)!.end, span.end).trimEnd(),
+    endsParagraph: false,
+  }
 }
 
 export function segmentSentences(text: string): SentenceSpan[] {
   const sentences: SentenceSpan[] = []
   for (const paragraph of segmentParagraphs(text)) {
-    // Hard-wrapped lines would otherwise force sentence breaks; same length keeps offsets valid.
-    const unwrapped = text.slice(paragraph.start, paragraph.end).replace(/\n/g, ' ')
+    // Hard wraps would force sentence breaks; a 1:1 replacement keeps offsets valid.
+    const unwrapped = text.slice(paragraph.start, paragraph.end).replace(/[\r\n]/g, ' ')
+    const segments = [...sentenceSegmenter.segment(unwrapped)]
+      .map((seg) => {
+        const start = paragraph.start + seg.index
+        const span = { start, end: start + seg.segment.length }
+        return { span, words: segmentWords(text, span) }
+      })
+      .filter((seg) => seg.words.length > 0)
+
+    if (segments.length === 0) continue
     const inParagraph: SentenceSpan[] = []
-    let carryStart: number | undefined
-
-    for (const seg of sentenceSegmenter.segment(unwrapped)) {
-      const start = carryStart ?? paragraph.start + seg.index
-      const end = paragraph.start + seg.index + seg.segment.length
-      const words = segmentWords(text, { start, end })
-      if (words.length === 0) continue
-      const trailing = text.slice(words.at(-1)!.end, end)
-      if (endsWithAbbreviation(words, trailing) && end < paragraph.end) {
-        carryStart = start
-        continue
+    let pending = segments[0]
+    for (const next of segments.slice(1)) {
+      if (continuesSentence(text, pending.span, pending.words, next.words)) {
+        pending = {
+          span: { start: pending.span.start, end: next.span.end },
+          words: [...pending.words, ...next.words],
+        }
+      } else {
+        inParagraph.push(toSentence(text, pending.span))
+        pending = next
       }
-      carryStart = undefined
-      inParagraph.push({
-        start,
-        end: trimEnd(text, start, end),
-        words,
-        trailing: trailing.trimEnd(),
-        endsParagraph: false,
-      })
     }
+    inParagraph.push(toSentence(text, pending.span))
 
-    if (carryStart !== undefined) {
-      const words = segmentWords(text, { start: carryStart, end: paragraph.end })
-      const trailing = text.slice(words.at(-1)!.end, paragraph.end)
-      inParagraph.push({
-        start: carryStart,
-        end: trimEnd(text, carryStart, paragraph.end),
-        words,
-        trailing: trailing.trimEnd(),
-        endsParagraph: false,
-      })
-    }
-    const last = inParagraph.at(-1)
-    if (last) last.endsParagraph = true
+    inParagraph.at(-1)!.endsParagraph = true
     sentences.push(...inParagraph)
   }
   return sentences

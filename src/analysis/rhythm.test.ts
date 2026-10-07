@@ -74,6 +74,15 @@ describe('notes', () => {
 })
 
 describe('rests and cadences', () => {
+  it('rests inside dialogue and cadences on the attribution', () => {
+    const score = analyze('“Stop!” she said.', lexicon)
+    expect(score.phrases).toHaveLength(1)
+    expect(rests(score).map((r) => [r.rest, r.mark])).toEqual([
+      ['pause', '!'],
+      ['cadence', '.'],
+    ])
+  })
+
   it('classifies punctuation as rests', () => {
     const score = analyze('Wait, no; stop — now… go.', lexicon)
     expect(rests(score).map((r) => [r.rest, r.mark, r.beats])).toEqual([

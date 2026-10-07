@@ -19,6 +19,10 @@ const FUNCTION_WORDS = new Set(
   don't doesn't didn't can't won't`.split(/\s+/),
 )
 
+export function isFunctionWord(word: string): boolean {
+  return FUNCTION_WORDS.has(normalizeWord(word))
+}
+
 export function normalizeWord(word: string): string {
   return word.toLowerCase().replace(/[’‘]/g, "'")
 }
