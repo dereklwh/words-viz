@@ -2,6 +2,7 @@ import { motion } from 'motion/react'
 import { arrival } from '../score/timing'
 import type { PulseColumn, PulseLayout } from './pulse'
 import { columnPath, plural, type ViewProps } from './props'
+import { ANNOTATION_FADE, EASE_OUT } from '../theme/motion'
 
 const HIT_MIN = 24
 const BRICK_GAP = 2
@@ -91,7 +92,7 @@ export function PulseView({ layout, entrance, total, focus, onFocus }: ViewProps
               }}
               initial={entrance ? { scaleY: 0 } : false}
               animate={{ scaleY: 1 }}
-              transition={{ delay: start, duration, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ delay: start, duration, ease: EASE_OUT }}
             >
               {wordHeight > 0 && !c.broken ? (
                 <Bricks column={c} wordHeight={wordHeight} baseline={baseline} />
@@ -120,7 +121,7 @@ export function PulseView({ layout, entrance, total, focus, onFocus }: ViewProps
         className="annotations"
         initial={entrance ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
-        transition={{ delay: settle, duration: 0.5 }}
+        transition={{ delay: settle, duration: ANNOTATION_FADE }}
       >
         {layout.mean && (
           <>

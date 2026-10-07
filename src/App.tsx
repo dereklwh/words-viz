@@ -4,6 +4,7 @@ import { analyze, loadLexicon, type Lexicon, type Score } from './analysis'
 import { PROVOST } from './analysis/fixtures/provost'
 import { describeRhythm } from './analysis/insights'
 import { departure } from './score/timing'
+import { FADE } from './theme/motion'
 import { Flight, type Ghost } from './ui/Flight'
 import { Legend } from './ui/Legend'
 import { Paragraph } from './ui/Paragraph'
@@ -57,6 +58,7 @@ function measureGhosts(
         top: from.top + window.scrollY,
         dx: origin.left + target[0] - (from.left + from.width / 2),
         dy: origin.top + target[1] - (from.top + from.height / 2),
+        height: from.height,
         color: tint(score.phrases[phrase], note),
         delay: departure(order, notes.length),
       },
@@ -111,8 +113,16 @@ export default function App() {
   async function showRhythm() {
     if (!text.trim() || loading) return
     setLoading(true)
-    const result = analyze(text, await (lexicon.current ?? loadLexicon()))
-    setLoading(false)
+    let result: Score
+    try {
+      result = analyze(text, await (lexicon.current ?? loadLexicon()))
+    } catch {
+      // Dictionary failed to load (offline?); heuristic syllables still make a fair score.
+      lexicon.current = null
+      result = analyze(text)
+    } finally {
+      setLoading(false)
+    }
     if (result.phrases.length === 0) return
     setEntrance(true)
     setScore(result)
@@ -181,7 +191,7 @@ export default function App() {
               key={`${view}:${score ? 'scored' : 'empty'}`}
               initial={animate ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: FADE }}
             >
               <ViewRenderer
                 chart={chart}

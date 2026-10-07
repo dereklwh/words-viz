@@ -2,6 +2,7 @@ import { motion } from 'motion/react'
 import { arrival } from '../score/timing'
 import type { LengthMixLayout } from './lengthMix'
 import { plural, type ViewProps } from './props'
+import { SPRING_DOT } from '../theme/motion'
 
 const HIT_MIN = 12
 
@@ -75,10 +76,8 @@ export function LengthMixView({
               initial={entrance ? { scale: 0 } : false}
               animate={{ scale: 1 }}
               transition={{
+                ...SPRING_DOT,
                 delay: entrance ? arrival(d.lastOrder, total) : 0,
-                type: 'spring',
-                stiffness: 420,
-                damping: 18,
               }}
             />
           </g>

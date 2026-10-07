@@ -22,13 +22,9 @@ function wordClass(focus: Focus | null, phrase: number, key: string): string {
   return focus.phrase === phrase && !focus.key ? 'word' : 'word dim'
 }
 
-function renderWords(
-  text: string,
-  score: Score,
-  tint: WordTint,
-  focus: Focus | null,
-  entrance: boolean,
-) {
+function renderWords(score: Score, tint: WordTint, focus: Focus | null, entrance: boolean) {
+  // Offsets index the analyzed text, which may lag edits made while the dictionary loaded.
+  const { text } = score
   const total = score.phrases.reduce((a, p) => a + p.words, 0)
   const parts: ReactNode[] = []
   let cursor = 0
@@ -66,10 +62,10 @@ function renderWords(
  */
 export function Paragraph({ text, score, tint, focus, entrance, onChange, onSubmit, ref }: Props) {
   return (
-    <div className="paragraph" data-value={`${text} `} ref={ref}>
+    <div className="paragraph" data-value={`${score?.text ?? text} `} ref={ref}>
       {score && tint ? (
         <div className="paragraph-text paragraph-scored">
-          {renderWords(text, score, tint, focus, entrance)}
+          {renderWords(score, tint, focus, entrance)}
         </div>
       ) : (
         <textarea

@@ -3,6 +3,7 @@ import type { PointerEvent } from 'react'
 import { arrival } from '../score/timing'
 import { plural, type ViewProps } from './props'
 import type { WaveformLayout } from './waveform'
+import { SPRING_BAR } from '../theme/motion'
 
 export function WaveformView({
   layout,
@@ -70,10 +71,8 @@ export function WaveformView({
             initial={entrance ? { scaleY: 0 } : false}
             animate={{ scaleY: 1 }}
             transition={{
+              ...SPRING_BAR,
               delay: entrance ? arrival(b.order, total) : 0,
-              type: 'spring',
-              stiffness: 380,
-              damping: 22,
             }}
           />
         )

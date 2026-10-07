@@ -8,6 +8,7 @@
   --ink-faint: #8a8fa8;
   --staff-line: #c3c8d6;
   --focus: #3b47d6;
+  --selection: color-mix(in oklch, var(--degree-0) 22%, transparent);
 
   /* pitch → color: tonic is deep and settled, the octave warm and tense (after Scriabin) */
   --degree-0: oklch(0.42 0.15 265);
