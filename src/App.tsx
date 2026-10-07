@@ -1,8 +1,9 @@
 import { motion, useReducedMotion } from 'motion/react'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { analyze, loadLexicon, type Lexicon, type Score } from './analysis'
 import { PROVOST } from './analysis/fixtures/provost'
 import { describeRhythm } from './analysis/insights'
+import { pickSample, sampleFor } from './samples'
 import { departure } from './score/timing'
 import { FADE } from './theme/motion'
 import { Flight, type Ghost } from './ui/Flight'
@@ -82,6 +83,7 @@ export default function App() {
   const [ghosts, setGhosts] = useState<Ghost[]>([])
   const [focus, setFocus] = useState<Focus | null>(null)
   const [loading, setLoading] = useState(false)
+  const [shuffles, setShuffles] = useState(0)
   const lexicon = useRef<Promise<Lexicon> | null>(null)
   const paragraphRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<HTMLDivElement>(null)
@@ -97,6 +99,7 @@ export default function App() {
   const tint = useMemo(() => (score ? wordTint(view, score) : null), [view, score])
   const total = score ? orderedNotes(score).length : 0
   const viewInfo = VIEWS.find((v) => v.id === view)!
+  const sample = sampleFor(score?.text ?? text)
 
   const measuredFor = useRef<Score | null>(null)
   useLayoutEffect(() => {
@@ -135,6 +138,25 @@ export default function App() {
     setEntrance(false)
   }
 
+  function trySample() {
+    if (score) edit()
+    setText(pickSample(sample?.id).text)
+    setShuffles((n) => n + 1)
+  }
+
+  const shuffleLink = (label: string) => (
+    <button
+      className="link shuffle"
+      style={{ '--turns': shuffles } as CSSProperties}
+      onClick={trySample}
+    >
+      {label}
+      <span className="shuffle-glyph" aria-hidden>
+        ↻
+      </span>
+    </button>
+  )
+
   function switchView(next: ViewId) {
     setView(next)
     setEntrance(false)
@@ -163,19 +185,33 @@ export default function App() {
           onChange={setText}
           onSubmit={showRhythm}
         />
+        {sample && (
+          <p key={sample.id} className="attribution">
+            — {sample.author}, <cite>{sample.work}</cite>, {sample.year}
+          </p>
+        )}
         <div className="actions">
           {score ? (
-            <button className="button" onClick={edit}>
-              Edit text
-            </button>
+            <>
+              <button className="button" onClick={edit}>
+                Edit text
+              </button>
+              {shuffleLink('Try another')}
+            </>
           ) : (
             <>
               <button className="button" onClick={showRhythm} disabled={!text.trim() || loading}>
                 {loading ? 'Loading dictionary…' : 'Show the rhythm'}
               </button>
-              <button className="link" onClick={() => setText(PROVOST)}>
-                Use Gary Provost’s paragraph
-              </button>
+              <span className="link-group">
+                <button className="link" onClick={() => setText(PROVOST)}>
+                  Use Gary Provost’s paragraph
+                </button>
+                <span className="sep" aria-hidden>
+                  ·
+                </span>
+                {shuffleLink(sample ? 'or another classic' : 'or a random classic')}
+              </span>
             </>
           )}
         </div>
