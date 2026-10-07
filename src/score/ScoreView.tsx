@@ -19,6 +19,7 @@ function NoteGlyph({ placed, space }: { placed: PlacedNote; space: number }) {
   const height = space * 0.9
   const inner = width - WORD_GAP
   const bead = inner / note.syllables
+  // CSS variables only resolve in `style`, not in SVG presentation attributes.
   const color = `var(--degree-${note.degree})`
   return (
     <>
@@ -30,15 +31,14 @@ function NoteGlyph({ placed, space }: { placed: PlacedNote; space: number }) {
           width={Math.max(1, bead - BEAD_GAP)}
           height={height}
           rx={Math.min(height / 2, (bead - BEAD_GAP) / 2)}
-          fill={color}
-          fillOpacity={stress > 0 ? 1 : 0.32}
+          style={{ fill: color, fillOpacity: stress > 0 ? 1 : 0.32 }}
         />
       ))}
       {note.accent && (
         <path
           d={`M ${x + width / 2 - 3.5} ${y - space * 1.35} l 7 2.5 l -7 2.5`}
           fill="none"
-          stroke={color}
+          style={{ stroke: color }}
           strokeWidth={1.25}
           strokeLinecap="round"
           strokeLinejoin="round"

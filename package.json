@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "snapshots": "node scripts/snapshots.mjs snapshots"
   },
   "dependencies": {
     "cmu-pronouncing-dictionary": "^3.0.0",
@@ -29,6 +30,7 @@
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
+    "playwright": "^1.63.0",
     "prettier": "^3.9.9",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",

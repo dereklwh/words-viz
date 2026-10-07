@@ -76,7 +76,7 @@ textarea.paragraph-text::placeholder {
 
 .word {
   text-decoration-line: underline;
-  text-decoration-thickness: 0.11em;
+  text-decoration-thickness: 0.08em;
   text-underline-offset: 0.3em;
   text-decoration-skip-ink: none;
   text-decoration-color: var(--tint);
@@ -204,8 +204,11 @@ textarea.paragraph-text::placeholder {
 }
 
 .flight {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
   pointer-events: none;
   z-index: 10;
 }

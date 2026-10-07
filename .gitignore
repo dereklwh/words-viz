@@ -26,3 +26,6 @@ dist-ssr
 # Local agent instructions
 /AGENTS.md
 /CLAUDE.md
+
+# visual check output
+snapshots/

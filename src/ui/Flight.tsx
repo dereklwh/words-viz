@@ -1,4 +1,5 @@
 import { motion } from 'motion/react'
+import { createPortal } from 'react-dom'
 import { FLIGHT } from '../score/timing'
 
 export interface Ghost {
@@ -21,7 +22,8 @@ interface Props {
 /** Copies of each word that lift off the paragraph and settle into their notes. */
 export function Flight({ ghosts, onDone }: Props) {
   const lastDelay = Math.max(0, ...ghosts.map((g) => g.delay))
-  return (
+  // Portaled to <body> so absolute positions are document coordinates.
+  return createPortal(
     <div className="flight" aria-hidden>
       {ghosts.map((g) => (
         <motion.span
@@ -41,6 +43,7 @@ export function Flight({ ghosts, onDone }: Props) {
           {g.text}
         </motion.span>
       ))}
-    </div>
+    </div>,
+    document.body,
   )
 }

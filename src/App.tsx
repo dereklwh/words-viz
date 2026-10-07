@@ -36,8 +36,9 @@ function measureGhosts(paragraph: HTMLElement, svg: SVGSVGElement, layout: Score
       {
         key: placed.key,
         text: word.textContent ?? '',
-        left: from.left,
-        top: from.top,
+        // Document coordinates, so ghosts and notes scroll together.
+        left: from.left + window.scrollX,
+        top: from.top + window.scrollY,
         dx: origin.left + placed.x + placed.width / 2 - (from.left + from.width / 2),
         dy: origin.top + placed.y - (from.top + from.height / 2),
         degree: placed.note.degree,
@@ -45,6 +46,14 @@ function measureGhosts(paragraph: HTMLElement, svg: SVGSVGElement, layout: Score
       },
     ]
   })
+}
+
+/** Brings the score into view while words are in flight, if it starts below the fold. */
+function revealScore(svg: SVGSVGElement) {
+  const box = svg.getBoundingClientRect()
+  if (box.top < window.innerHeight * 0.6) return
+  const top = window.scrollY + box.top - window.innerHeight * 0.3
+  window.scrollTo({ top, behavior: 'smooth' })
 }
 
 export default function App() {
@@ -75,7 +84,9 @@ export default function App() {
     if (measuredFor.current === score) return
     measuredFor.current = score
     const svg = stageRef.current?.querySelector('svg')
-    if (svg) setGhosts(measureGhosts(paragraphRef.current, svg, layout))
+    if (!svg) return
+    setGhosts(measureGhosts(paragraphRef.current, svg, layout))
+    revealScore(svg)
   }, [score, entrance, reduceMotion, layout])
 
   async function showRhythm() {
