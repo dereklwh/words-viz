@@ -24,7 +24,7 @@ describe('layoutPulse', () => {
       { x: 183, y: 20, text: '10' },
       { x: 33, y: 90, text: '5' },
     ])
-    expect(layout.mean).toEqual({ y: 80.5, label: 'average 6' })
+    expect(layout.mean).toEqual({ y: 80.5, x: 0, anchor: 'start', label: 'average 6' })
     expect(layout.run).toEqual({ x1: 21, x2: 145, y: 186, label: '3 in a row' })
   })
 
@@ -32,6 +32,11 @@ describe('layoutPulse', () => {
     expect(layout.targets['0:0']).toEqual([33, 161])
     expect(layout.targets['3:9']).toEqual([183, 35])
     expect(layout.columns[3]).toMatchObject({ firstOrder: 15, lastOrder: 24 })
+  })
+
+  it('keeps the mean label on the right when nothing reaches it', () => {
+    const flat = layoutPulse(score(sentence(0, 10), sentence(1, 2), sentence(2, 2)), 216)
+    expect(flat.mean).toMatchObject({ x: 216, anchor: 'end' })
   })
 
   it('skips the run when no three sentences match', () => {

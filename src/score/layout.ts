@@ -188,3 +188,19 @@ export function layoutScore(score: Score, options: LayoutOptions): ScoreLayout {
     contours,
   }
 }
+
+/** A single empty staff, shown before anything has been analyzed. */
+export function emptyStaffLayout(width: number): ScoreLayout {
+  const options = defaultOptions(width)
+  return {
+    width,
+    height: options.marginTop * 2 + options.staffSpace * 4,
+    staffSpace: options.staffSpace,
+    systems: [{ index: 0, top: options.marginTop, end: options.indent, measure: 1 }],
+    notes: [],
+    rests: [],
+    bars: [],
+    ties: [],
+    contours: [],
+  }
+}

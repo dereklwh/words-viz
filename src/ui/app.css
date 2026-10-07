@@ -75,6 +75,7 @@ textarea.paragraph-text::placeholder {
 }
 
 .word {
+  transition: opacity var(--dur-fast) var(--ease-out);
   text-decoration-line: underline;
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.3em;
@@ -195,14 +196,6 @@ textarea.paragraph-text::placeholder {
   stroke-opacity: 0.45;
 }
 
-.legend {
-  max-width: var(--measure);
-  margin: var(--space-3) 0 0;
-  font-size: var(--step--1);
-  font-style: italic;
-  color: var(--ink-faint);
-}
-
 .flight {
   position: absolute;
   top: 0;
@@ -220,4 +213,186 @@ textarea.paragraph-text::placeholder {
   min-height: 0;
   white-space: nowrap;
   will-change: transform, opacity;
+}
+
+.word.dim {
+  opacity: 0.3;
+}
+
+.word.lit {
+  background: color-mix(in oklch, var(--tint) 18%, transparent);
+  border-radius: 2px;
+}
+
+.headline {
+  max-width: var(--measure);
+  margin: 0 0 var(--space-4);
+  font-size: var(--step-2);
+  font-weight: 350;
+  font-variation-settings: 'opsz' 48;
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+
+.switcher {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--staff-line);
+  border-radius: 999px;
+}
+
+.switcher-option {
+  font: inherit;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.35em 1em 0.4em;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.switcher-option:hover {
+  color: var(--ink);
+}
+
+.switcher-option[aria-checked='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.switcher-option:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.chart {
+  position: relative;
+}
+
+.chart-svg {
+  display: block;
+  overflow: visible;
+}
+
+.axis {
+  stroke: var(--staff-line);
+  stroke-width: 1;
+}
+
+.reference {
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+}
+
+.bracket {
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+}
+
+.chart-label,
+.chart-caption {
+  font-size: 12px;
+  fill: var(--ink-soft);
+}
+
+.chart-caption {
+  font-style: italic;
+  fill: var(--ink-faint);
+}
+
+.chart-value {
+  font-size: 13px;
+  font-weight: 500;
+  fill: var(--ink);
+}
+
+.mark {
+  outline: none;
+  cursor: default;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.mark:focus-visible .hit {
+  stroke: var(--focus);
+  stroke-width: 1.5;
+}
+
+.hit {
+  fill: transparent;
+}
+
+.tooltip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 10px));
+  pointer-events: none;
+  display: grid;
+  gap: 1px;
+  padding: 0.4em 0.7em 0.45em;
+  background: var(--paper-raised);
+  border: 1px solid var(--staff-line);
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.tooltip strong {
+  font-size: var(--step-0);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.tooltip span {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.legend {
+  max-width: var(--measure);
+  margin-top: var(--space-3);
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+}
+
+.legend p {
+  margin: 0;
+  font-style: italic;
+}
+
+.legend-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  list-style: none;
+  color: var(--ink-soft);
+}
+
+.legend-keys li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

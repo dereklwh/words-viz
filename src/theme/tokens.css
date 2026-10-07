@@ -19,6 +19,15 @@
   --degree-6: oklch(0.64 0.17 8);
   --degree-7: oklch(0.68 0.16 25);
 
+  /* charts — validated with the dataviz palette checker (light surface #eef0f3) */
+  --mark: #4651b8;
+  --mark-emphasis: #e0604a;
+  --bin-1: #939de4;
+  --bin-2: #7380d8;
+  --bin-3: #5260c4;
+  --bin-4: #3a46a6;
+  --bin-5: #252e7a;
+
   /* type: one family, optical sizes do the work */
   --font: 'Newsreader', 'Iowan Old Style', Georgia, serif;
   --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.875rem);
@@ -62,6 +71,13 @@
     --degree-5: oklch(0.77 0.14 351);
     --degree-6: oklch(0.8 0.13 8);
     --degree-7: oklch(0.83 0.12 25);
+    --mark: #7c86f0;
+    --mark-emphasis: #d9604c;
+    --bin-1: #4c57b4;
+    --bin-2: #6873d2;
+    --bin-3: #8590e6;
+    --bin-4: #a6aff3;
+    --bin-5: #c9cffb;
     color-scheme: dark;
   }
 }
@@ -82,6 +98,13 @@
   --degree-5: oklch(0.77 0.14 351);
   --degree-6: oklch(0.8 0.13 8);
   --degree-7: oklch(0.83 0.12 25);
+  --mark: #7c86f0;
+  --mark-emphasis: #d9604c;
+  --bin-1: #4c57b4;
+  --bin-2: #6873d2;
+  --bin-3: #8590e6;
+  --bin-4: #a6aff3;
+  --bin-5: #c9cffb;
   color-scheme: dark;
 }
 

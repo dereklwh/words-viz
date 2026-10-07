@@ -16,7 +16,7 @@ export interface PulseColumn {
 export interface PulseLayout extends ViewLayout {
   baseline: number
   columns: PulseColumn[]
-  mean: { y: number; label: string } | null
+  mean: { y: number; x: number; anchor: 'start' | 'end'; label: string } | null
   labels: { x: number; y: number; text: string }[]
   run: { x1: number; x2: number; y: number; label: string } | null
 }
@@ -27,6 +27,17 @@ const BOTTOM = 36
 const MAX_COLUMN = 24
 const GAP = 2
 const MIN_RUN = 3
+/** Room reserved for the mean label, approximating "average 54" at 12px. */
+const MEAN_LABEL_WIDTH = 72
+
+/** Puts the mean label on whichever end of the line no column reaches into. */
+function placeMeanLabel(columns: PulseColumn[], y: number, width: number) {
+  const clear = (x0: number, x1: number) =>
+    !columns.some((c) => c.x < x1 && c.x + c.width > x0 && c.top < y)
+  if (clear(width - MEAN_LABEL_WIDTH, width)) return { x: width, anchor: 'end' as const }
+  if (clear(0, MEAN_LABEL_WIDTH)) return { x: 0, anchor: 'start' as const }
+  return { x: width, anchor: 'end' as const }
+}
 
 export function layoutPulse(score: Score, width: number): PulseLayout {
   const { lengths, longestRun, meanLength } = score.metrics
@@ -85,6 +96,7 @@ export function layoutPulse(score: Score, width: number): PulseLayout {
     text: String(c.words),
   }))
 
+  const meanY = baseline - scale(meanLength)
   const runStart = columns[longestRun.start]
   const runEnd = columns[longestRun.start + longestRun.length - 1]
   return {
@@ -93,7 +105,11 @@ export function layoutPulse(score: Score, width: number): PulseLayout {
     targets,
     baseline,
     columns,
-    mean: { y: baseline - scale(meanLength), label: `average ${Math.round(meanLength)}` },
+    mean: {
+      y: meanY,
+      ...placeMeanLabel(columns, meanY, width),
+      label: `average ${Math.round(meanLength)}`,
+    },
     labels,
     run:
       longestRun.length >= MIN_RUN

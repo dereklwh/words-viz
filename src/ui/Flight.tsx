@@ -10,7 +10,7 @@ export interface Ghost {
   /** Translation from the word's origin to its note's center. */
   dx: number
   dy: number
-  degree: number
+  color: string
   delay: number
 }
 
@@ -29,7 +29,7 @@ export function Flight({ ghosts, onDone }: Props) {
         <motion.span
           key={g.key}
           className="paragraph-text ghost"
-          style={{ left: g.left, top: g.top, color: `var(--degree-${g.degree})` }}
+          style={{ left: g.left, top: g.top, color: g.color }}
           initial={{ x: 0, y: 0, scale: 1, opacity: 0 }}
           animate={{ x: g.dx, y: g.dy, scale: 0.3, opacity: [0, 1, 1, 0] }}
           transition={{
