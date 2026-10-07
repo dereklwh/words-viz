@@ -1,12 +1,16 @@
 import { line, curveCatmullRom } from 'd3-shape'
 import { motion } from 'motion/react'
+import type { Focus } from '../views/types'
 import type { PlacedNote, ScoreLayout } from './layout'
 import { arrival } from './timing'
+import { DRAW, EASE_IN_OUT, SPRING_NOTE } from '../theme/motion'
 
 interface Props {
   layout: ScoreLayout
   /** Animate notes in as words land; false renders the settled score. */
   entrance: boolean
+  focus?: Focus | null
+  onFocus?: (focus: Focus | null) => void
 }
 
 const contourPath = line().curve(curveCatmullRom.alpha(0.5))
@@ -48,7 +52,7 @@ function NoteGlyph({ placed, space }: { placed: PlacedNote; space: number }) {
   )
 }
 
-export function ScoreView({ layout, entrance }: Props) {
+export function ScoreView({ layout, entrance, focus = null, onFocus }: Props) {
   const { staffSpace: space, width } = layout
   const staffHeight = space * 4
   const total = layout.notes.length
@@ -88,7 +92,7 @@ export function ScoreView({ layout, entrance }: Props) {
           d={contourPath(c.points) ?? undefined}
           initial={entrance ? { pathLength: 0, opacity: 0 } : false}
           animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ duration: 1.2, delay: entrance ? 1.2 + i * 0.05 : 0, ease: 'easeInOut' }}
+          transition={{ duration: DRAW, delay: entrance ? DRAW + i * 0.05 : 0, ease: EASE_IN_OUT }}
         />
       ))}
 
@@ -134,14 +138,27 @@ export function ScoreView({ layout, entrance }: Props) {
         <motion.g
           key={placed.key}
           data-note={placed.key}
-          style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+          onPointerEnter={() =>
+            onFocus?.({
+              phrase: Number(placed.key.split(':')[0]),
+              key: placed.key,
+              x: placed.x + placed.width / 2,
+              y: placed.y - space,
+              value: `“${placed.note.text}”`,
+              label: `${placed.note.syllables} syllable${placed.note.syllables === 1 ? '' : 's'}`,
+            })
+          }
+          onPointerLeave={() => onFocus?.(null)}
+          style={{
+            transformBox: 'fill-box',
+            transformOrigin: 'center',
+            opacity: focus && focus.key !== placed.key ? 0.35 : undefined,
+          }}
           initial={entrance ? { opacity: 0, scale: 0.4 } : false}
           animate={{ opacity: 1, scale: 1 }}
           transition={{
+            ...SPRING_NOTE,
             delay: entrance ? arrival(placed.order, total) : 0,
-            type: 'spring',
-            stiffness: 420,
-            damping: 26,
           }}
         >
           <title>{placed.note.text}</title>

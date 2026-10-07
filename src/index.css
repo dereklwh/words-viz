@@ -23,5 +23,5 @@ body {
 }
 
 ::selection {
-  background: var(--accent-soft);
+  background: var(--selection);
 }
