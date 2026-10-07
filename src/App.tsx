@@ -72,11 +72,6 @@ function revealChart(svg: SVGSVGElement) {
   window.scrollTo({ top, behavior: 'smooth' })
 }
 
-function legendKeys(view: (typeof VIEWS)[number], score: Score) {
-  const hasRun = score.metrics.longestRun.length >= 3
-  return view.id === 'pulse' && !hasRun ? view.keys?.slice(0, 1) : view.keys
-}
-
 export default function App() {
   const [text, setText] = useState('')
   const [score, setScore] = useState<Score | null>(null)
@@ -200,7 +195,7 @@ export default function App() {
           {focus && <Tooltip focus={focus} />}
         </div>
 
-        <Legend text={viewInfo.legend} keys={score ? legendKeys(viewInfo, score) : undefined} />
+        <Legend text={viewInfo.legend} keys={score ? viewInfo.keys : undefined} />
 
         {score && (
           <table className="visually-hidden">

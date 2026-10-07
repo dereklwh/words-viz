@@ -27,14 +27,14 @@ export function WaveformView({
       if (bar.y !== row.y) continue
       if (!nearest || Math.abs(bar.x - x) < Math.abs(nearest.x - x)) nearest = bar
     }
-    if (!nearest || Math.abs(nearest.x - x) > 16) return onFocus(null)
+    if (!nearest || Math.abs(nearest.x - x) > 12) return onFocus(null)
     onFocus({
       phrase: nearest.phrase,
       key: nearest.key,
       x: nearest.x + nearest.width / 2,
       y: nearest.y - nearest.amplitude,
-      value: plural(nearest.syllables, 'syllable'),
-      label: `“${nearest.text}”`,
+      value: `“${nearest.text}”`,
+      label: plural(nearest.syllables, 'syllable'),
     })
   }
 
@@ -50,20 +50,20 @@ export function WaveformView({
       {rows.map((r) => (
         <line key={r.y} className="axis" x1={0} x2={r.end} y1={r.y} y2={r.y} />
       ))}
-      {bars.map((b) => {
+      {bars.map((b, i) => {
         const dimmed =
           focus !== null && (focus.key ? focus.key !== b.key : focus.phrase !== b.phrase)
         return (
           <motion.rect
-            key={b.key}
+            key={i}
             x={b.x}
             y={b.y - b.amplitude}
             width={b.width}
             height={b.amplitude * 2}
-            rx={Math.min(b.width / 2, 3)}
+            rx={b.width / 2}
             style={{
               fill: b.accent ? 'var(--mark-emphasis)' : 'var(--mark)',
-              fillOpacity: (b.faint ? 0.35 : 1) * (dimmed ? 0.35 : 1),
+              fillOpacity: (b.faint ? 0.45 : 1) * (dimmed ? 0.3 : 1),
               transformBox: 'fill-box',
               transformOrigin: 'center',
             }}

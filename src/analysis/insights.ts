@@ -25,11 +25,11 @@ const VARIED = 0.45
 const MIN_RUN = 3
 
 export const LENGTH_BINS = [
-  { label: '1–4', min: 1, max: 4 },
-  { label: '5–9', min: 5, max: 9 },
-  { label: '10–17', min: 10, max: 17 },
-  { label: '18–29', min: 18, max: 29 },
-  { label: '30+', min: 30, max: Infinity },
+  { name: 'Very short', label: '1–4', min: 1, max: 4 },
+  { name: 'Short', label: '5–9', min: 5, max: 9 },
+  { name: 'Medium', label: '10–17', min: 10, max: 17 },
+  { name: 'Long', label: '18–29', min: 18, max: 29 },
+  { name: 'Very long', label: '30+', min: 30, max: Infinity },
 ] as const
 
 export function lengthBin(words: number): number {

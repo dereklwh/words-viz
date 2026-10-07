@@ -396,3 +396,48 @@ textarea.paragraph-text::placeholder {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+.chart-tick {
+  font-size: 11px;
+  fill: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-tick.is-focused {
+  fill: var(--ink);
+}
+
+.tooltip span {
+  font-style: italic;
+  max-width: 24rem;
+  white-space: normal;
+}
+
+.swatch-pill {
+  width: 14px;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.swatch-outline {
+  width: 16px;
+  height: 6px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+.mix-name {
+  font-size: 13px;
+  fill: var(--ink);
+}
+
+.mix-range {
+  font-size: 11px;
+  fill: var(--ink-faint);
+}
+
+.track {
+  stroke: var(--staff-line);
+  stroke-width: 1;
+  stroke-opacity: 0.6;
+}

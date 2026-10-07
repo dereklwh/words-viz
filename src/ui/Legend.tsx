@@ -7,7 +7,13 @@ export function Legend({ text, keys = [] }: { text: string; keys?: LegendKey[] }
         <ul className="legend-keys">
           {keys.map((k) => (
             <li key={k.label}>
-              <span className="swatch" style={{ background: k.color, opacity: k.opacity }} />
+              <span
+                className={`swatch swatch-${k.shape ?? 'square'}`}
+                style={{
+                  ...(k.shape === 'outline' ? { borderColor: k.color } : { background: k.color }),
+                  opacity: k.opacity,
+                }}
+              />
               {k.label}
             </li>
           ))}

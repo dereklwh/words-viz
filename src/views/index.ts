@@ -13,38 +13,41 @@ export interface LegendKey {
   color: string
   label: string
   opacity?: number
+  shape?: 'square' | 'pill' | 'outline'
 }
 
 export const VIEWS: { id: ViewId; label: string; legend: string; keys?: LegendKey[] }[] = [
   {
     id: 'pulse',
     label: 'Pulse',
-    legend: 'Each bar is a sentence, measured in words.',
-    keys: [
-      { color: 'var(--mark)', label: 'Sentence' },
-      { color: 'var(--mark-emphasis)', label: 'Run of similar lengths' },
-    ],
+    legend: 'Each bar is a sentence, and each block is one word.',
   },
   {
     id: 'waveform',
     label: 'Waveform',
-    legend: 'Each bar is a word: taller means more syllables. Gaps are punctuation.',
+    legend:
+      'Each bar is a syllable: stressed syllables stand tall, so you can see the da-DUM. Gaps are punctuation.',
     keys: [
-      { color: 'var(--mark)', label: 'Word' },
-      { color: 'var(--mark)', label: 'Small word', opacity: 0.35 },
-      { color: 'var(--mark-emphasis)', label: 'Stressed word a phrase leans on' },
+      { color: 'var(--mark)', label: 'Syllable', shape: 'pill' },
+      { color: 'var(--mark)', label: 'Small word', opacity: 0.45, shape: 'pill' },
+      { color: 'var(--mark-emphasis)', label: 'Word a phrase leans on', shape: 'pill' },
     ],
   },
   {
     id: 'mix',
     label: 'Length mix',
-    legend: 'Each dot is a sentence, grouped by how many words it has.',
+    legend: 'Each dot is a sentence. A good paragraph usually has dots in several rows.',
   },
   {
     id: 'score',
     label: 'Score',
     legend:
-      'Each sentence is a phrase. Longer words hold longer notes, stressed syllables are solid, and punctuation rests.',
+      'Each sentence is a phrase between barlines. Higher on the staff means higher pitch, and longer words hold longer notes.',
+    keys: [
+      { color: 'var(--degree-4)', label: 'Stressed syllable', shape: 'pill' },
+      { color: 'var(--degree-4)', label: 'Unstressed syllable', opacity: 0.32, shape: 'pill' },
+      { color: 'var(--ink-faint)', label: 'Pause', shape: 'outline' },
+    ],
   },
 ]
 

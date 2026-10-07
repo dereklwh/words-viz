@@ -12,18 +12,31 @@ export function LengthMixView({
   focus,
   onFocus,
 }: ViewProps<LengthMixLayout>) {
-  const { width, height, baseline, dots, bins, labelY } = layout
+  const { width, height, labelWidth, dots, rows } = layout
   return (
     <svg className="chart-svg" width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-      <line className="axis" x1={0} x2={width} y1={baseline} y2={baseline} />
-      {bins.map((b) => (
-        <text key={b.label} className="chart-label" x={b.x} y={labelY} textAnchor="middle">
-          {b.label}
-        </text>
+      {rows.map((row) => (
+        <g key={row.name}>
+          <line
+            className="track"
+            x1={row.count > 0 ? row.countX + 20 : labelWidth}
+            x2={width}
+            y1={row.centerY}
+            y2={row.centerY}
+          />
+          <text className="mix-name" x={0} y={row.centerY - 2}>
+            {row.name}
+          </text>
+          <text className="mix-range" x={0} y={row.centerY + 12}>
+            {row.range}
+          </text>
+          {row.count > 0 && (
+            <text className="chart-label" x={row.countX} y={row.centerY + 4}>
+              {row.count}
+            </text>
+          )}
+        </g>
       ))}
-      <text className="chart-caption" x={width / 2} y={labelY + 16} textAnchor="middle">
-        words per sentence
-      </text>
 
       {dots.map((d) => {
         const dimmed = focus !== null && focus.phrase !== d.phrase
@@ -33,7 +46,7 @@ export function LengthMixView({
             x: d.cx,
             y: d.cy - d.r,
             value: plural(d.words, 'word'),
-            label: `Sentence ${d.phrase + 1}`,
+            label: `“${d.text}”`,
           })
         return (
           <g
