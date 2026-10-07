@@ -144,18 +144,10 @@ export default function App() {
     setShuffles((n) => n + 1)
   }
 
-  const shuffleLink = (label: string) => (
-    <button
-      className="link shuffle"
-      style={{ '--turns': shuffles } as CSSProperties}
-      onClick={trySample}
-    >
-      {label}
-      <span className="shuffle-glyph" aria-hidden>
-        ↻
-      </span>
-    </button>
-  )
+  function loadProvost() {
+    if (score) edit()
+    setText(PROVOST)
+  }
 
   function switchView(next: ViewId) {
     setView(next)
@@ -175,6 +167,26 @@ export default function App() {
 
       <section className="composer">
         <h1>How does your paragraph sound?</h1>
+        {/* Above the paragraph so the links stay put while the text below changes length. */}
+        <p className="starters">
+          <span className="starters-lead">Try</span>
+          <button className="link" onClick={loadProvost}>
+            Gary Provost’s paragraph
+          </button>
+          <span className="sep" aria-hidden>
+            ·
+          </span>
+          <button
+            className="link shuffle"
+            style={{ '--turns': shuffles } as CSSProperties}
+            onClick={trySample}
+          >
+            {sample ? 'another classic' : 'a random classic'}
+            <span className="shuffle-glyph" aria-hidden>
+              ↻
+            </span>
+          </button>
+        </p>
         <Paragraph
           ref={paragraphRef}
           text={text}
@@ -192,27 +204,13 @@ export default function App() {
         )}
         <div className="actions">
           {score ? (
-            <>
-              <button className="button" onClick={edit}>
-                Edit text
-              </button>
-              {shuffleLink('Try another')}
-            </>
+            <button className="button" onClick={edit}>
+              Edit text
+            </button>
           ) : (
-            <>
-              <button className="button" onClick={showRhythm} disabled={!text.trim() || loading}>
-                {loading ? 'Loading dictionary…' : 'Show the rhythm'}
-              </button>
-              <span className="link-group">
-                <button className="link" onClick={() => setText(PROVOST)}>
-                  Use Gary Provost’s paragraph
-                </button>
-                <span className="sep" aria-hidden>
-                  ·
-                </span>
-                {shuffleLink(sample ? 'or another classic' : 'or a random classic')}
-              </span>
-            </>
+            <button className="button" onClick={showRhythm} disabled={!text.trim() || loading}>
+              {loading ? 'Loading dictionary…' : 'Show the rhythm'}
+            </button>
           )}
         </div>
       </section>
